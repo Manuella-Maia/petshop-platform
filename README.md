@@ -88,22 +88,6 @@ automação: é necessário adicionar um arquivo de workflow válido.
 5.  Adicione os testes, a documentação da API e os workflows apenas
     quando forem necessários.
 
-## Tecnologias e ferramentas que podem ser adicionadas
-
--   **PHP + Composer** --- backend e gerenciamento de dependências.
--   **PHPUnit** --- testes automatizados.
--   **OpenAPI + Swagger UI** --- descrição e visualização da
-    documentação da API.
--   **GitHub Actions** --- automação de testes e verificações.
--   **PHPStan** --- análise estática do código PHP.
--   **Composer Audit** --- verificação de vulnerabilidades conhecidas
-    nas dependências.
--   **OWASP ZAP** --- análise dinâmica de segurança de uma aplicação em
-    execução.
-
-Essas ferramentas não estão configuradas automaticamente neste template;
-adicione-as conforme o escopo do projeto.
-
 ## Observações
 
 -   O Git não versiona pastas vazias. Arquivos `.gitkeep` são usados
