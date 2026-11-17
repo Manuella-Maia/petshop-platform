@@ -1,5 +1,5 @@
 import Login from "./pages/Login";
-import Animals from "./pages/animals";
+import Animals from "./pages/Animals";
 import HomePage from "./pages/HomePage";
 import { Route, Routes } from "react-router-dom";
 export default function App(){

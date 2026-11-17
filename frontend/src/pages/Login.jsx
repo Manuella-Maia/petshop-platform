@@ -58,7 +58,7 @@ export default function Login() {
               name="email"
               id="email"
               value={email}
-              onChange={setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="voce@gmail.com"
               autoComplete="email"
               className="h-12 w-full rounded-xl border-[1.5px] border-borda bg-white px-4 text-base text-texto outline-none focus:border-verde-escuro focus:ring-[3px] focus:ring-foco"
@@ -75,7 +75,7 @@ export default function Login() {
                 name="senha"
                 id="senha"
                 value={senha}
-                onChange={setSenha(e.target.value)}
+                onChange={(e) => setSenha(e.target.value)}
                 placeholder="Sua senha"
                 autoComplete="current-password"
                 className="h-12 w-full rounded-xl border-[1.5px] border-borda bg-white pl-4 pr-[52px] text-base text-texto outline-none focus:border-verde-escuro focus:ring-[3px] focus:ring-foco"
