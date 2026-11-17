@@ -1,6 +1,3 @@
-export default function Animals (){
-    return (
-        <>
-        </>
-    )
+export default function Animals() {
+  return null;
 }
