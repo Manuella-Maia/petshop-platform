@@ -94,7 +94,7 @@ export default function AnimalRegistration() {
                             <label htmlFor="nome">
                                 Nome do pet
                             </label>
-                            <input type="text" name="nome" id="nome" placeholder="Ex.: Thor" required />
+                            <input type="text" name="nome" id="nome" value={nome} onChange={setNome(e.target.value)} placeholder="Ex.: Thor" required />
                         </div>
 
                         <div>
@@ -102,14 +102,23 @@ export default function AnimalRegistration() {
                                 <label htmlFor="especie">
                                     Espécie
                                 </label>
-                                <select name="especie" id="especie"></select>
+                                <select name="especie" id="especie" value={especie} onSelect={(e) => setEspecie(e.target.value)}>
+
+                                </select>
                             </div>
                             <div>
                                 <label htmlFor="raca">Raça</label>
-                                <select name="raca" id="raca"></select>                            </div>
+                                <input type="text" placeholder="Ex.: Golden Retriever" name="raca" id="raca" value={raca} onChange={(e) => setRaca(e.target.value)} required/>
+                            </div>
                             <div>
                                 <label htmlFor="porte">Porte</label>
-                                <select name="porte" id="porte"></select>
+                                <select name="porte" id="porte">
+                                    {
+                                        porte.forEach(element => {
+                                            
+                                        })
+                                    }
+                                </select>
                             </div>
                             <div>
                                 <label htmlFor="data">
