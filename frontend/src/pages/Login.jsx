@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 export default function Login() {
   const navigate = useNavigate();
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [senha,setSenha] = useState('');
+  const [email,setEmail] = useState('');
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -55,6 +57,8 @@ export default function Login() {
               type="email"
               name="email"
               id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="voce@gmail.com"
               autoComplete="email"
               className="h-12 w-full rounded-xl border-[1.5px] border-borda bg-white px-4 text-base text-texto outline-none focus:border-verde-escuro focus:ring-[3px] focus:ring-foco"
@@ -70,6 +74,8 @@ export default function Login() {
                 type={mostrarSenha ? "text" : "password"}
                 name="senha"
                 id="senha"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
                 placeholder="Sua senha"
                 autoComplete="current-password"
                 className="h-12 w-full rounded-xl border-[1.5px] border-borda bg-white pl-4 pr-[52px] text-base text-texto outline-none focus:border-verde-escuro focus:ring-[3px] focus:ring-foco"
