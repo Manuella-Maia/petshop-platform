@@ -35,29 +35,34 @@ export default function AnimalRegistration() {
   //para facilitar o uso de pesquisa nas raças
 
   //O useEffect só sera rodado quando o componente for montado
-  /*
-    useEffect(() => {
-        racas.length = 0;
+  useEffect(() => {
+    racas.length = 0;
 
-        async function dadosGatos() {
-            const resposta = await fetch("https://api.thecatapi.com/v1/breeds", {
-                headers: { "x-api-key": "live_hUYlZFZ83iQeEyxLs8pMk4xgXW0DYTV846w8CJUPSjzifgdMDDkkkEKBNpuUhDwW" },
-            });
-            const data = await res.json();
-            racas.push(...data);
-        }
+    async function dadosGatos() {
+      const resposta = await fetch("https://api.thecatapi.com/v1/breeds", {
+        headers: { "x-api-key": "live_hUYlZFZ83iQeEyxLs8pMk4xgXW0DYTV846w8CJUPSjzifgdMDDkkkEKBNpuUhDwW" },
+      });
+      const data = await res.json();
+      const array = JSON.parse(data);
+      const nomes = array.map(pet => pet.name);
+      racas.push(...nomes);
+    }
 
-        async function dadosCanino() {
+    async function dadosCanino() {
+      const res = await fetch("https://api.thedogapi.com/v1/breeds", {
+        headers: { "x-api-key": "live_dfSgl1ByNRRl7LAF6VQXR9k5PbtIyeyKS4iORDpuQI6YdgIdlytKbPemJnnIORqT" },
+      });
+      const data = await res.json();
+      const array = JSON.parse(data);
+      const nomes = array.map(pet => pet.name);
+      racas.push(...nomes);
+    }
 
-        }
+    dadosGatos();
 
-        async function dadosAve() {
+    dadosCanino();
 
-        }
-
-
-    }, []);
-    */
+  }, []);
   function handleSubmit(e) {
     e.preventDefault();
   }
@@ -145,9 +150,8 @@ export default function AnimalRegistration() {
                       value={especie}
                       onChange={(e) => setEspecie(e.target.value)}
                       required
-                      className={`${selectClasses} ${
-                        especie === "" ? "text-[#9aa79a]" : "text-texto"
-                      }`}
+                      className={`${selectClasses} ${especie === "" ? "text-[#9aa79a]" : "text-texto"
+                        }`}
                     >
                       <option value="" disabled>
                         Selecione
@@ -194,9 +198,8 @@ export default function AnimalRegistration() {
                       value={porte}
                       onChange={(e) => setPorte(e.target.value)}
                       required
-                      className={`${selectClasses} ${
-                        porte === "" ? "text-[#9aa79a]" : "text-texto"
-                      }`}
+                      className={`${selectClasses} ${porte === "" ? "text-[#9aa79a]" : "text-texto"
+                        }`}
                     >
                       <option value="" disabled>
                         Selecione
