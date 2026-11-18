@@ -28,12 +28,3 @@ export function getInitials(name) {
     .join("")
     .toLocaleUpperCase("pt-BR");
 }
-
-export function filterRaca(animals, name){
-
-    const resultado = animals.filter(raca => 
-      raca.name.toLowerCase().includes(name.trim().toLowerCase())
-    );
-
-    return resultado;
-}
