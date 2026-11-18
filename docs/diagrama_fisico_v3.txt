@@ -1,0 +1,431 @@
+
+-- ============================================================
+-- SENAI - SERVIÇO NACIONAL DE APRENDIZAGEM INDUSTRIAL
+-- Curso: Aprendizagem Industrial em Programação Web
+-- Unidade Curricular: Fundamentos de Segurança da Tecnologia
+--             da Informação
+--
+-- Projeto: API Petshop
+-- Banco de Dados: api_petshop
+--
+-- Descrição:
+-- Script SQL responsável pela criação e estruturação do banco
+-- de dados de um sistema de gerenciamento de pet shop,
+-- incluindo tabelas, relacionamentos, inserção de dados,
+-- VIEW e PROCEDURE.
+--
+-- Tecnologia: MySQL
+-- ============================================================
+
+
+-- =====================================================
+-- 1. CRIAÇÃO E SELEÇÃO DO BANCO DE DADOS
+-- =====================================================
+
+-- Consulta os bancos de dados existentes
+SHOW DATABASES;
+
+-- Cria o banco de dados caso ainda não exista
+CREATE DATABASE IF NOT EXISTS api_petshop;
+
+-- Seleciona o banco que será utilizado
+USE api_petshop;
+
+
+-- =====================================================
+-- 2. CRIAÇÃO DAS TABELAS
+-- =====================================================
+
+-- -----------------------------------------------------
+-- Tabela: perfis
+-- Armazena os tipos de acesso disponíveis no sistema.
+-- -----------------------------------------------------
+
+CREATE TABLE perfis (
+    id_perfil INT AUTO_INCREMENT PRIMARY KEY,
+    nome_perfil VARCHAR(30) NOT NULL,
+    descricao_perfil VARCHAR(50) NOT NULL
+);
+
+
+-- -----------------------------------------------------
+-- Tabela: usuarios
+-- Armazena as credenciais e informações de acesso.
+-- Cada usuário está associado a um perfil.
+-- -----------------------------------------------------
+
+CREATE TABLE usuarios (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    id_perfil INT NOT NULL,
+    email_usuario VARCHAR(120) NOT NULL,
+    senha_hash VARCHAR(255) NOT NULL,
+    status_usuario VARCHAR(20) NOT NULL,
+    bloqueado_usuario BOOLEAN NOT NULL,
+    criado_usuario DATETIME NOT NULL,
+    atualizado_usuario DATETIME NULL,
+
+    FOREIGN KEY (id_perfil)
+        REFERENCES perfis(id_perfil)
+);
+
+
+-- -----------------------------------------------------
+-- Tabela: clientes
+-- Armazena os dados pessoais dos clientes do pet shop.
+-- Cada cliente possui um usuário de acesso.
+-- -----------------------------------------------------
+
+CREATE TABLE clientes (
+    id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    nome_cliente VARCHAR(80) NOT NULL,
+    cpf_cliente VARCHAR(14) NOT NULL,
+    cpf_hash_cliente VARCHAR(255) NOT NULL,
+    telefone_cliente VARCHAR(15) NOT NULL,
+    criado_cliente DATETIME NOT NULL,
+    atualizado_cliente DATETIME NULL,
+
+    FOREIGN KEY (id_usuario)
+        REFERENCES usuarios(id_usuario)
+);
+
+
+-- -----------------------------------------------------
+-- Tabela: funcionarios
+-- Armazena os dados dos funcionários da empresa.
+-- Cada funcionário possui um usuário de acesso.
+-- -----------------------------------------------------
+
+CREATE TABLE funcionarios (
+    id_funcionario INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    nome_funcionario VARCHAR(80) NOT NULL,
+    email_funcionario VARCHAR(120) NOT NULL,
+    cpf_funcionario VARCHAR(14) NOT NULL,
+    cpf_hash_funcionario VARCHAR(255) NOT NULL,
+    telefone_funcionario VARCHAR(15) NOT NULL,
+    cargo_funcionario VARCHAR(20) NOT NULL,
+    data_admissao DATE NOT NULL,
+    data_desligamento DATE NULL,
+    criado_funcionario DATETIME NOT NULL,
+    atualizado_funcionario DATETIME NULL,
+
+    FOREIGN KEY (id_usuario)
+        REFERENCES usuarios(id_usuario)
+);
+
+
+-- -----------------------------------------------------
+-- Tabela: pets
+-- Armazena os animais cadastrados no pet shop.
+-- Cada animal está associado a um cliente.
+-- -----------------------------------------------------
+
+CREATE TABLE pets (
+    id_pet INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT NOT NULL,
+    nome_pet VARCHAR(80) NOT NULL,
+    especie_pet VARCHAR(50) NOT NULL,
+    raca_pet VARCHAR(40) NOT NULL,
+    porte VARCHAR(7) NOT NULL,
+    peso_pet DECIMAL(10,2) NOT NULL,
+    data_nascimento_pet DATE NOT NULL,
+    observacao_pet VARCHAR(80) NULL,
+    ativo_pet BOOLEAN NOT NULL,
+    criado_pet DATETIME NOT NULL,
+    atualizado_pet DATETIME NULL,
+
+    FOREIGN KEY (id_cliente)
+        REFERENCES clientes(id_cliente)
+);
+
+
+-- -----------------------------------------------------
+-- Tabela: servicos
+-- Armazena os serviços oferecidos pelo pet shop.
+-- -----------------------------------------------------
+
+CREATE TABLE servicos (
+    id_servico INT AUTO_INCREMENT PRIMARY KEY,
+    tipo_servico VARCHAR(20) NOT NULL,
+    descricao VARCHAR(50) NULL,
+    preco_base DECIMAL(10,2) NOT NULL,
+    ativo_servico BOOLEAN NOT NULL,
+    duracao TIME NOT NULL,
+    criado_servico DATETIME NOT NULL,
+    atualizado_servico DATETIME NULL
+);
+
+
+-- -----------------------------------------------------
+-- Tabela: agendamentos
+-- Registra os agendamentos dos animais.
+-- Cada agendamento está associado a um pet e funcionário.
+-- -----------------------------------------------------
+
+CREATE TABLE agendamentos (
+    id_agendamento INT AUTO_INCREMENT PRIMARY KEY,
+    id_pet INT NOT NULL,
+    id_funcionario INT NOT NULL,
+    data_agendamento DATETIME NOT NULL,
+    status_agendamento VARCHAR(20) NOT NULL,
+    criado_agendamento DATETIME NOT NULL,
+    atualizado_agendamento DATETIME NULL,
+
+    FOREIGN KEY (id_pet)
+        REFERENCES pets(id_pet),
+
+    FOREIGN KEY (id_funcionario)
+        REFERENCES funcionarios(id_funcionario)
+);
+
+
+-- -----------------------------------------------------
+-- Tabela: agendamento_servicos
+-- Relaciona os agendamentos aos serviços contratados.
+-- Permite associar serviços aos agendamentos.
+-- -----------------------------------------------------
+
+CREATE TABLE agendamento_servicos (
+    id_agendamento_servico INT AUTO_INCREMENT PRIMARY KEY,
+    id_agendamento INT NOT NULL,
+    id_servico INT NOT NULL,
+    quantidade_servico INT NOT NULL,
+    preco_unitario DECIMAL(10,2) NOT NULL,
+
+    FOREIGN KEY (id_agendamento)
+        REFERENCES agendamentos(id_agendamento),
+
+    FOREIGN KEY (id_servico)
+        REFERENCES servicos(id_servico)
+);
+
+
+-- -----------------------------------------------------
+-- Tabela: auditoria
+-- Registra as ações realizadas pelos usuários no sistema.
+-- Cada registro de auditoria está associado a um usuário.
+-- -----------------------------------------------------
+
+CREATE TABLE auditoria (
+    id_auditoria INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    acao VARCHAR(50) NOT NULL,
+    valor_anterior VARCHAR(50) NOT NULL,
+    valor_atualizado VARCHAR(50) NOT NULL,
+    data_time_auditoria DATETIME NOT NULL,
+
+    FOREIGN KEY (id_usuario)
+        REFERENCES usuarios(id_usuario)
+);
+
+
+-- =====================================================
+-- 3. INSERÇÃO DE DADOS (POPULAÇÃO DAS TABELAS)
+-- =====================================================
+
+-- -----------------------------------------------------
+-- Popula a tabela perfis
+-- -----------------------------------------------------
+
+INSERT INTO perfis (nome_perfil, descricao_perfil) VALUES
+('Administrador', 'Acesso completo ao sistema'),
+('Cliente', 'Acesso aos serviços e agendamentos'),
+('Funcionario', 'Acesso operacional ao sistema');
+
+
+-- -----------------------------------------------------
+-- Popula a tabela usuarios
+-- Cada usuário recebe um perfil.
+-- -----------------------------------------------------
+
+INSERT INTO usuarios (
+    id_perfil, email_usuario, senha_hash, status_usuario,
+    bloqueado_usuario, criado_usuario
+) VALUES
+(2, 'maria@email.com', 'hash_maria', 'Ativo', FALSE, NOW()),
+(2, 'joao@email.com', 'hash_joao', 'Ativo', FALSE, NOW()),
+(2, 'carla@email.com', 'hash_carla', 'Ativo', FALSE, NOW()),
+(3, 'ana@petshop.com', 'hash_ana', 'Ativo', FALSE, NOW()),
+(3, 'carlos@petshop.com', 'hash_carlos', 'Ativo', FALSE, NOW()),
+(3, 'juliana@petshop.com', 'hash_juliana', 'Ativo', FALSE, NOW());
+
+
+-- -----------------------------------------------------
+-- Popula a tabela clientes
+-- -----------------------------------------------------
+
+INSERT INTO clientes (
+    id_usuario, nome_cliente, cpf_cliente, cpf_hash_cliente,
+    telefone_cliente, criado_cliente
+) VALUES
+(1, 'Maria Silva', '123.456.789-01', 'hash_maria', '(31)98765-4321', NOW()),
+(2, 'Joao Mendes', '234.567.890-12', 'hash_joao', '(31)97654-3210', NOW()),
+(3, 'Carla Souza', '345.678.901-23', 'hash_carla', '(31)98877-6655', NOW());
+
+
+-- -----------------------------------------------------
+-- Popula a tabela funcionarios
+-- -----------------------------------------------------
+
+INSERT INTO funcionarios (
+    id_usuario, nome_funcionario, email_funcionario,
+    cpf_funcionario, cpf_hash_funcionario, telefone_funcionario,
+    cargo_funcionario, data_admissao, criado_funcionario
+) VALUES
+(4, 'Ana Souza', 'ana@petshop.com', '456.789.012-34', 'hash_ana', '(31)98765-4321', 'Veterinaria', '2025-01-10', NOW()),
+(5, 'Carlos Mendes', 'carlos@petshop.com', '567.890.123-45', 'hash_carlos', '(31)97654-3210', 'Tosador', '2025-03-15', NOW()),
+(6, 'Juliana Costa', 'juliana@petshop.com', '678.901.234-56', 'hash_juliana', '(31)98877-6655', 'Atendente', '2025-06-20', NOW());
+
+
+-- -----------------------------------------------------
+-- Popula a tabela pets
+-- Cada pet está associado a um cliente.
+-- -----------------------------------------------------
+
+INSERT INTO pets (
+    id_cliente, nome_pet, especie_pet, raca_pet, porte,
+    peso_pet, data_nascimento_pet, observacao_pet,
+    ativo_pet, criado_pet
+) VALUES
+(1, 'Rex', 'Cachorro', 'Labrador', 'Grande', 30.00, '2020-05-10', 'Animal dócil', TRUE, NOW()),
+(2, 'Mimi', 'Gato', 'Siamês', 'Pequeno', 4.50, '2022-08-15', 'Gosta de brincar', TRUE, NOW()),
+(3, 'Thor', 'Cachorro', 'Pastor Alemao', 'Grande', 35.00, '2019-03-20', NULL, TRUE, NOW());
+
+
+-- -----------------------------------------------------
+-- Popula a tabela servicos
+-- -----------------------------------------------------
+
+INSERT INTO servicos (
+    tipo_servico, descricao, preco_base,
+    ativo_servico, duracao, criado_servico
+) VALUES
+('Banho', 'Banho completo', 50.00, TRUE, '01:00:00', NOW()),
+('Tosa', 'Tosa tradicional', 70.00, TRUE, '01:30:00', NOW()),
+('Consulta', 'Consulta veterinaria', 100.00, TRUE, '00:45:00', NOW());
+
+
+-- -----------------------------------------------------
+-- Popula a tabela agendamentos
+-- -----------------------------------------------------
+
+INSERT INTO agendamentos (
+    id_pet, id_funcionario, data_agendamento,
+    status_agendamento, criado_agendamento
+) VALUES
+(1, 1, '2026-11-20 09:00:00', 'Confirmado', NOW()),
+(2, 2, '2026-11-20 10:30:00', 'Pendente', NOW()),
+(3, 3, '2026-11-21 14:00:00', 'Confirmado', NOW());
+
+
+-- -----------------------------------------------------
+-- Popula a tabela agendamento_servicos
+-- -----------------------------------------------------
+
+INSERT INTO agendamento_servicos (
+    id_agendamento, id_servico,
+    quantidade_servico, preco_unitario
+) VALUES
+(1, 1, 1, 50.00),
+(2, 2, 1, 70.00),
+(3, 3, 1, 100.00);
+
+
+-- -----------------------------------------------------
+-- Popula a tabela auditoria
+-- -----------------------------------------------------
+
+INSERT INTO auditoria (
+    id_usuario, acao, valor_anterior,
+    valor_atualizado, data_time_auditoria
+) VALUES
+(1, 'Cadastro de perfil', 'Inexistente', 'Administrador', NOW()),
+(2, 'Cadastro de cliente', 'Inexistente', 'Maria Silva', NOW()),
+(3, 'Cadastro de funcionario', 'Inexistente', 'Ana Souza', NOW());
+
+
+-- =====================================================
+-- 4. CRIAÇÃO DA VIEW
+-- =====================================================
+
+-- Cria uma visão para consultar os animais cadastrados.
+-- A VIEW permite consultar os dados sem escrever o SELECT
+-- completo novamente.
+
+CREATE OR REPLACE VIEW vw_animais AS
+SELECT * FROM pets;
+
+
+-- =====================================================
+-- 5. CRIAÇÃO DA PROCEDURE
+-- =====================================================
+
+-- Procedure responsável por cadastrar novos animais.
+-- Recebe os dados do animal e o ID do cliente responsável.
+-- Os campos ativo_pet e criado_pet são preenchidos
+-- automaticamente durante a inserção.
+
+DROP PROCEDURE IF EXISTS cadastrar_pet;
+
+DELIMITER //
+
+CREATE PROCEDURE cadastrar_pet(
+    IN p_id_cliente INT,
+    IN p_nome_pet VARCHAR(80),
+    IN p_especie_pet VARCHAR(50),
+    IN p_raca_pet VARCHAR(40),
+    IN p_porte VARCHAR(7),
+    IN p_peso_pet DECIMAL(10,2),
+    IN p_data_nascimento_pet DATE,
+    IN p_observacao_pet VARCHAR(80)
+)
+BEGIN
+
+    INSERT INTO pets (
+        id_cliente,
+        nome_pet,
+        especie_pet,
+        raca_pet,
+        porte,
+        peso_pet,
+        data_nascimento_pet,
+        observacao_pet,
+        ativo_pet,
+        criado_pet
+    )
+    VALUES (
+        p_id_cliente,
+        p_nome_pet,
+        p_especie_pet,
+        p_raca_pet,
+        p_porte,
+        p_peso_pet,
+        p_data_nascimento_pet,
+        p_observacao_pet,
+        TRUE,
+        NOW()
+    );
+
+END //
+
+DELIMITER ;
+
+
+-- =====================================================
+-- 6. CONSULTAS PARA CONFERIR OS RESULTADOS
+-- =====================================================
+
+-- Consulta todos os registros das tabelas.
+SELECT * FROM perfis;
+SELECT * FROM usuarios;
+SELECT * FROM clientes;
+SELECT * FROM funcionarios;
+SELECT * FROM pets;
+SELECT * FROM servicos;
+SELECT * FROM agendamentos;
+SELECT * FROM agendamento_servicos;
+SELECT * FROM auditoria;
+
+-- Consulta os dados da VIEW.
+SELECT * FROM vw_animais;
