@@ -3,7 +3,9 @@ import { useEffect } from "react";
 import { FaPaw, FaChevronDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-const apiKey = import.meta.env.VITE_API_KEY;
+const apiDogKey = import.meta.env.VITE_API_DOG_KEY;
+
+const apiCatKey = import.meta.env.VITE_API_CAT_KEY;
 
 const especies = ["Canino", "Felino", "Ave", "Outro"];
 
@@ -39,39 +41,59 @@ export default function AnimalRegistration() {
 
   //O useEffect só sera rodado quando o componente for montado
   useEffect(() => {
-    racas.length = 0;
 
     async function dadosGatos() {
-      const res = await fetch("https://api.thecatapi.com/v1/breeds", {
-        headers: { "x-api-key": apiKey },
-      });
-      const data = await res.json();
-      const array = JSON.parse(data);
-      const nomes = array.map(pet => pet.name);
-      setRacasGatos0p(...nomes);
+      try {
+        const res = await fetch("https://api.thecatapi.com/v1/breeds", {
+          headers: { "x-api-key": apiCatKey },
+        });
+
+        if (!res.ok) {
+          throw new Error(`Erro ${res.status}`);
+        }
+
+        const lista = await res.json();
+        setRacasGatos(lista.map((pet) => pet.name));
+        } catch (erro) {
+          console.error("Falha ao buscar raças de gatos:", erro);
+        }
     }
 
     async function dadosCanino() {
-      const res = await fetch("https://api.thedogapi.com/v1/breeds", {
-        headers: { "x-api-key": apiKey },
-      });
-      const data = await res.json();
-      const array = JSON.parse(data);
-      const nomes = array.map(pet => pet.name);
-      setRacasCaes(...nomes);
+    try {
+        const res = await fetch("https://api.thedogapi.com/v1/breeds", {
+          headers: { "x-api-key": apiDogKey },
+        });
+
+        if (!res.ok) {
+          throw new Error(`Erro ${res.status}`);
+        }
+
+        const lista = await res.json();
+        setRacasCaes(lista.map((pet) => pet.name));
+        } catch (erro) {
+          console.error("Falha ao buscar raças de cães:", erro);
+        }
     }
 
     dadosGatos();
 
     dadosCanino();
 
+    
+
   }, []);
   function handleSubmit(e) {
     e.preventDefault();
   }
 
+  console.log(racasGatos);
+    console.log(racasCaes);
+  
   return (
     <>
+
+    
       <main className="grid min-h-screen bg-white font-sans text-texto min-[860px]:grid-cols-2">
         <section className="relative flex flex-col justify-between gap-6 overflow-hidden bg-verde-escuro px-6 py-8 text-white min-[860px]:px-16 min-[860px]:py-14">
           <div
