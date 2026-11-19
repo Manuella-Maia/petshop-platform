@@ -3,7 +3,6 @@ import { FiPlus, FiSearch, FiX } from "react-icons/fi";
 import Header from "../components/Header";
 import AnimalAvatar from "../components/AnimalAvatar";
 import AnimalProfileModal from "../components/AnimalProfileModal";
-import AnimalRegistrationModal from "../components/AnimalRegistrationModal";
 import { filterAnimals } from "../utils/animals";
 
 const headerLinks = [
@@ -79,28 +78,6 @@ export default function Animals() {
     <div className="min-h-screen bg-fundo font-sans text-texto">
       <Header links={headerLinks} />
       <main className="mx-auto w-full max-w-6xl px-5 py-10 sm:px-8 lg:px-12">
-        <div className="flex flex-wrap items-end justify-between gap-5">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-verde-escuro">
-              Cadastro
-            </p>
-            <h1 className="mt-2 text-4xl font-black tracking-tight sm:text-5xl">Animais</h1>
-            <p role="status" aria-live="polite" className="mt-3 text-texto/70">
-              {filteredAnimals.length === 1
-                ? "1 animal encontrado"
-                : `${filteredAnimals.length} animais encontrados`}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setRegistrationOpen(true)}
-            aria-haspopup="dialog"
-            className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-laranja px-6 py-3.5 text-sm font-bold transition hover:bg-laranja-escuro focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-verde-escuro"
-          >
-            <FiPlus aria-hidden="true" className="text-xl" />
-            Cadastrar animal
-          </button>
-        </div>
 
         <section aria-label="Filtros de animais" className="my-8 flex flex-wrap items-center gap-5 rounded-3xl bg-white p-5 sm:p-6">
           <div className="relative min-w-0 flex-1 basis-80">
