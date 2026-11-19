@@ -3,11 +3,11 @@ import { useEffect } from "react";
 import { FaPaw, FaChevronDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
+const apiKey = import.meta.env.VITE_API_KEY;
+
 const especies = ["Canino", "Felino", "Ave", "Outro"];
 
 const portes = ["Pequeno", "Médio", "Grande"];
-
-const racas = [];
 
 //Classes compartilhadas dos campos do formulario
 const labelClasses = "text-sm font-semibold text-texto";
@@ -22,9 +22,12 @@ const selectClasses = `${fieldBaseClasses} h-12 cursor-pointer appearance-none p
 const textareaClasses = `${fieldBaseClasses} h-[120px] resize-none py-3 text-texto`;
 
 export default function AnimalRegistration() {
+  const [racasCaes, setRacasCaes] = useState([]);
+  const [racasGatos, setRacasGatos] = useState([]);
+
   //Variaveis para armazenar o valor dos campos no formulario
 
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
   const [nome, setNome] = useState("");
   const [especie, setEspecie] = useState("");
   const [raca, setRaca] = useState("");
@@ -39,23 +42,23 @@ export default function AnimalRegistration() {
     racas.length = 0;
 
     async function dadosGatos() {
-      const resposta = await fetch("https://api.thecatapi.com/v1/breeds", {
-        headers: { "x-api-key": "live_hUYlZFZ83iQeEyxLs8pMk4xgXW0DYTV846w8CJUPSjzifgdMDDkkkEKBNpuUhDwW" },
+      const res = await fetch("https://api.thecatapi.com/v1/breeds", {
+        headers: { "x-api-key": apiKey },
       });
       const data = await res.json();
       const array = JSON.parse(data);
       const nomes = array.map(pet => pet.name);
-      racas.push(...nomes);
+      setRacasGatos0p(...nomes);
     }
 
     async function dadosCanino() {
       const res = await fetch("https://api.thedogapi.com/v1/breeds", {
-        headers: { "x-api-key": "live_dfSgl1ByNRRl7LAF6VQXR9k5PbtIyeyKS4iORDpuQI6YdgIdlytKbPemJnnIORqT" },
+        headers: { "x-api-key": apiKey },
       });
       const data = await res.json();
       const array = JSON.parse(data);
       const nomes = array.map(pet => pet.name);
-      racas.push(...nomes);
+      setRacasCaes(...nomes);
     }
 
     dadosGatos();
@@ -183,78 +186,79 @@ export default function AnimalRegistration() {
                     required
                     className={inputClasses}
                   />
-                </div>
+                  
               </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="porte" className={labelClasses}>
-                    Porte
-                  </label>
-                  <div className="relative">
-                    <select
-                      name="porte"
-                      id="porte"
-                      value={porte}
-                      onChange={(e) => setPorte(e.target.value)}
-                      required
-                      className={`${selectClasses} ${porte === "" ? "text-[#9aa79a]" : "text-texto"
-                        }`}
-                    >
-                      <option value="" disabled>
-                        Selecione
-                      </option>
-                      {portes.map((opcao) => (
-                        <option key={opcao} value={opcao}>
-                          {opcao}
-                        </option>
-                      ))}
-                    </select>
-                    <FaChevronDown
-                      aria-hidden="true"
-                      className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[#6f7a6f]"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="data" className={labelClasses}>
-                    Data de nascimento
-                  </label>
-                  <input
-                    type="date"
-                    name="data"
-                    id="data"
-                    value={data}
-                    onChange={(e) => setData(e.target.value)}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="porte" className={labelClasses}>
+                  Porte
+                </label>
+                <div className="relative">
+                  <select
+                    name="porte"
+                    id="porte"
+                    value={porte}
+                    onChange={(e) => setPorte(e.target.value)}
                     required
-                    className={inputClasses}
+                    className={`${selectClasses} ${porte === "" ? "text-[#9aa79a]" : "text-texto"
+                      }`}
+                  >
+                    <option value="" disabled>
+                      Selecione
+                    </option>
+                    {portes.map((opcao) => (
+                      <option key={opcao} value={opcao}>
+                        {opcao}
+                      </option>
+                    ))}
+                  </select>
+                  <FaChevronDown
+                    aria-hidden="true"
+                    className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[#6f7a6f]"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col gap-2">
-                <label htmlFor="observacoes" className={labelClasses}>
-                  Observações
+                <label htmlFor="data" className={labelClasses}>
+                  Data de nascimento
                 </label>
-                <textarea
-                  name="observacoes"
-                  id="observacoes"
-                  placeholder="Alergias, temperamento, cuidados especiais…"
-                  className={textareaClasses}
-                ></textarea>
+                <input
+                  type="date"
+                  name="data"
+                  id="data"
+                  value={data}
+                  onChange={(e) => setData(e.target.value)}
+                  required
+                  className={inputClasses}
+                />
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="mt-8 h-[52px] w-full cursor-pointer rounded-xl bg-laranja text-[17px] font-extrabold text-texto hover:bg-laranja-escuro focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-verde-escuro"
-            >
-              Cadastrar pet
-            </button>
-          </form>
-        </section>
-      </main>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="observacoes" className={labelClasses}>
+                Observações
+              </label>
+              <textarea
+                name="observacoes"
+                id="observacoes"
+                placeholder="Alergias, temperamento, cuidados especiais…"
+                className={textareaClasses}
+              ></textarea>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="mt-8 h-[52px] w-full cursor-pointer rounded-xl bg-laranja text-[17px] font-extrabold text-texto hover:bg-laranja-escuro focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-verde-escuro"
+          >
+            Cadastrar pet
+          </button>
+        </form>
+      </section>
+    </main >
     </>
   );
 }
