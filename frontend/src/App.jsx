@@ -10,6 +10,7 @@ export default function App(){
             <Route path="/homePage" element={<HomePage/>}/>
             <Route path="/animais" element={<Animals />} />
             <Route path="/animais/registration" element={<AnimalRegistration/>} />
+            <Route path="*" element={<NotFound />} />
         </Routes>
     )
 }

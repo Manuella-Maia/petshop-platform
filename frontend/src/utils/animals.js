@@ -28,3 +28,8 @@ export function getInitials(name) {
     .join("")
     .toLocaleUpperCase("pt-BR");
 }
+
+export function getRaca(racas,raca){queueMicrotask
+    const result = racas.filter(r => r.includes(raca).toLowerCase() === raca.toLowerCase());
+    return result;
+}

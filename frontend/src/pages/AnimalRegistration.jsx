@@ -200,10 +200,17 @@ export default function AnimalRegistration() {
                   </label>
                   <input
                     type="text"
-                    placeholder="Ex.: Golden Retriever"
+                    placeholder={
+                      especie === "Canino"
+                        ? "Ex.: Golden Retriever"
+                        : especie === "Felino"
+                        ? "Ex.: Siamese"
+                        : "Digite a raça"
+                      }
                     name="raca"
                     id="raca"
                     value={raca}
+                    disabled={!especie}
                     onChange={(e) => setRaca(e.target.value)}
                     required
                     className={inputClasses}
