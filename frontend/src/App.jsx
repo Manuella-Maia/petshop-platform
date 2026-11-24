@@ -1,6 +1,7 @@
 import Login from "./pages/Login";
 import Animals from "./pages/Animals";
 import HomePage from "./pages/HomePage";
+import NotFound from "./pages/NotFound.jsx";
 import { Route, Routes } from "react-router-dom";
 import AnimalRegistration from "./pages/AnimalRegistration";
 export default function App(){
