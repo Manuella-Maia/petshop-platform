@@ -30,6 +30,6 @@ export function getInitials(name) {
 }
 
 export function getRaca(racas,raca){queueMicrotask
-    const result = racas.filter(r => r.includes(raca).toLowerCase() === raca.toLowerCase());
+  const result = racas.filter(r => r.toLowerCase().includes(raca.toLowerCase()));
     return result;
 }
