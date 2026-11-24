@@ -2,12 +2,13 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { FaPaw, FaChevronDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { getRaca } from "../utils/animals";
 
 const apiDogKey = import.meta.env.VITE_API_DOG_KEY;
 
 const apiCatKey = import.meta.env.VITE_API_CAT_KEY;
 
-const especies = ["Canino", "Felino", "Ave", "Outro"];
+const especies = ["Canino", "Felino", "Outro"];
 
 const portes = ["Pequeno", "Médio", "Grande"];
 
@@ -24,6 +25,8 @@ const selectClasses = `${fieldBaseClasses} h-12 cursor-pointer appearance-none p
 const textareaClasses = `${fieldBaseClasses} h-[120px] resize-none py-3 text-texto`;
 
 export default function AnimalRegistration() {
+  const [mostrarSugestoes, setMostrarSugestoes] = useState(false);
+
   const [racasCaes, setRacasCaes] = useState([]);
   const [racasGatos, setRacasGatos] = useState([]);
 
@@ -41,7 +44,6 @@ export default function AnimalRegistration() {
 
   //O useEffect só sera rodado quando o componente for montado
   useEffect(() => {
-
     async function dadosGatos() {
       try {
         const res = await fetch("https://api.thecatapi.com/v1/breeds", {
@@ -54,13 +56,13 @@ export default function AnimalRegistration() {
 
         const lista = await res.json();
         setRacasGatos(lista.map((pet) => pet.name));
-        } catch (erro) {
-          console.error("Falha ao buscar raças de gatos:", erro);
-        }
+      } catch (erro) {
+        console.error("Falha ao buscar raças de gatos:", erro);
+      }
     }
 
     async function dadosCanino() {
-    try {
+      try {
         const res = await fetch("https://api.thedogapi.com/v1/breeds", {
           headers: { "x-api-key": apiDogKey },
         });
@@ -71,29 +73,40 @@ export default function AnimalRegistration() {
 
         const lista = await res.json();
         setRacasCaes(lista.map((pet) => pet.name));
-        } catch (erro) {
-          console.error("Falha ao buscar raças de cães:", erro);
-        }
+      } catch (erro) {
+        console.error("Falha ao buscar raças de cães:", erro);
+      }
     }
 
     dadosGatos();
 
     dadosCanino();
-
-    
-
   }, []);
+
+  // Lista de raças de acordo com a espécie escolhida
+  const racasDaEspecie =
+    especie === "Canino" ? racasCaes : especie === "Felino" ? racasGatos : [];
+
+  // Filtra pela espécie e pelo que foi digitado
+  const sugestoes = getRaca(racasDaEspecie, raca);
+
   function handleSubmit(e) {
     e.preventDefault();
   }
 
-  console.log(racasGatos);
-    console.log(racasCaes);
-  
+  function handleEspecieChange(e) {
+    setEspecie(e.target.value);
+    setRaca("");
+    setMostrarSugestoes(false);
+  }
+
+  function selecionarRaca(nome) {
+    setRaca(nome);
+    setMostrarSugestoes(false);
+  }
+
   return (
     <>
-
-    
       <main className="grid min-h-screen bg-white font-sans text-texto min-[860px]:grid-cols-2">
         <section className="relative flex flex-col justify-between gap-6 overflow-hidden bg-verde-escuro px-6 py-8 text-white min-[860px]:px-16 min-[860px]:py-14">
           <div
@@ -175,8 +188,9 @@ export default function AnimalRegistration() {
                       value={especie}
                       onChange={(e) => setEspecie(e.target.value)}
                       required
-                      className={`${selectClasses} ${especie === "" ? "text-[#9aa79a]" : "text-texto"
-                        }`}
+                      className={`${selectClasses} ${
+                        especie === "" ? "text-[#9aa79a]" : "text-texto"
+                      }`}
                     >
                       <option value="" disabled>
                         Selecione
@@ -198,96 +212,129 @@ export default function AnimalRegistration() {
                   <label htmlFor="raca" className={labelClasses}>
                     Raça
                   </label>
-                  <input
-                    type="text"
-                    placeholder={
-                      especie === "Canino"
-                        ? "Ex.: Golden Retriever"
-                        : especie === "Felino"
-                        ? "Ex.: Siamese"
-                        : "Digite a raça"
+                  <div className="relative">
+                    <input
+                      type="text"
+                      autoComplete="off"
+                      aria-autocomplete="list"
+                      placeholder={
+                        especie === "Canino"
+                          ? "Ex.: Golden Retriever"
+                          : especie === "Felino"
+                            ? "Ex.: Siamese"
+                            : "Digite a raça"
                       }
-                    name="raca"
-                    id="raca"
-                    value={raca}
-                    disabled={!especie}
-                    onChange={(e) => setRaca(e.target.value)}
+                      name="raca"
+                      id="raca"
+                      value={raca}
+                      disabled={!especie}
+                      onChange={(e) => {
+                        setRaca(e.target.value);
+                        setMostrarSugestoes(true);
+                      }}
+                      onFocus={() => setMostrarSugestoes(true)}
+                      onBlur={() => setMostrarSugestoes(false)}
+                      onKeyDown={(e) =>
+                        e.key === "Escape" && setMostrarSugestoes(false)
+                      }
+                      required
+                      className={`${inputClasses} disabled:cursor-not-allowed disabled:bg-[#f3f6f3]`}
+                    />
+
+                    {mostrarSugestoes && sugestoes.length > 0 && (
+                      <ul
+                        role="listbox"
+                        className="absolute inset-x-0 top-full z-20 mt-1 max-h-48 overflow-y-auto rounded-xl border border-[#d8e0d8] bg-white py-1 shadow-lg"
+                      >
+                        {sugestoes.map((nome) => (
+                          <li
+                            key={nome}
+                            role="option"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              selecionarRaca(nome);
+                            }}
+                            className="cursor-pointer px-4 py-2 text-[15px] text-texto hover:bg-[#eef5ee]"
+                          >
+                            {nome}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="porte" className={labelClasses}>
+                    Porte
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="porte"
+                      id="porte"
+                      value={porte}
+                      onChange={(e) => setPorte(e.target.value)}
+                      required
+                      className={`${selectClasses} ${
+                        porte === "" ? "text-[#9aa79a]" : "text-texto"
+                      }`}
+                    >
+                      <option value="" disabled>
+                        Selecione
+                      </option>
+                      {portes.map((opcao) => (
+                        <option key={opcao} value={opcao}>
+                          {opcao}
+                        </option>
+                      ))}
+                    </select>
+                    <FaChevronDown
+                      aria-hidden="true"
+                      className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[#6f7a6f]"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="data" className={labelClasses}>
+                    Data de nascimento
+                  </label>
+                  <input
+                    type="date"
+                    name="data"
+                    id="data"
+                    value={data}
+                    onChange={(e) => setData(e.target.value)}
                     required
                     className={inputClasses}
-                  />
-                  
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
-                <label htmlFor="porte" className={labelClasses}>
-                  Porte
-                </label>
-                <div className="relative">
-                  <select
-                    name="porte"
-                    id="porte"
-                    value={porte}
-                    onChange={(e) => setPorte(e.target.value)}
-                    required
-                    className={`${selectClasses} ${porte === "" ? "text-[#9aa79a]" : "text-texto"
-                      }`}
-                  >
-                    <option value="" disabled>
-                      Selecione
-                    </option>
-                    {portes.map((opcao) => (
-                      <option key={opcao} value={opcao}>
-                        {opcao}
-                      </option>
-                    ))}
-                  </select>
-                  <FaChevronDown
-                    aria-hidden="true"
-                    className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[#6f7a6f]"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col gap-2">
-                <label htmlFor="data" className={labelClasses}>
-                  Data de nascimento
+                <label htmlFor="observacoes" className={labelClasses}>
+                  Observações
                 </label>
-                <input
-                  type="date"
-                  name="data"
-                  id="data"
-                  value={data}
-                  onChange={(e) => setData(e.target.value)}
-                  required
-                  className={inputClasses}
-                />
+                <textarea
+                  name="observacoes"
+                  id="observacoes"
+                  placeholder="Alergias, temperamento, cuidados especiais…"
+                  className={textareaClasses}
+                ></textarea>
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label htmlFor="observacoes" className={labelClasses}>
-                Observações
-              </label>
-              <textarea
-                name="observacoes"
-                id="observacoes"
-                placeholder="Alergias, temperamento, cuidados especiais…"
-                className={textareaClasses}
-              ></textarea>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="mt-8 h-[52px] w-full cursor-pointer rounded-xl bg-laranja text-[17px] font-extrabold text-texto hover:bg-laranja-escuro focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-verde-escuro"
-          >
-            Cadastrar pet
-          </button>
-        </form>
-      </section>
-    </main >
+            <button
+              type="submit"
+              className="mt-8 h-[52px] w-full cursor-pointer rounded-xl bg-laranja text-[17px] font-extrabold text-texto hover:bg-laranja-escuro focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-verde-escuro"
+            >
+              Cadastrar pet
+            </button>
+          </form>
+        </section>
+      </main>
     </>
   );
 }
